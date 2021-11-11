@@ -89,31 +89,39 @@ namespace Amazon.Geo.S2
 		 * 
 		 * ** All non-leaf cells contain 4 child cells.
 		 */
-            if (children.Count == 1 || children.Count == 2)
+            switch (children.Count)
             {
-                foreach (var child in children)
-                {
-                    if (child.IsLeaf)
+                case 1:
+                case 2:
                     {
-                        cellIds.Add(child);
+                        foreach (var child in children)
+                        {
+                            if (child.IsLeaf)
+                            {
+                                cellIds.Add(child);
+                            }
+                            else
+                            {
+                                queue.Enqueue(child);
+                            }
+                        }
                     }
-                    else
+                    break;
+                case 3:
                     {
-                        queue.Enqueue(child);
+                        cellIds.AddRange(children);
                     }
-                }
-            }
-            else if (children.Count == 3)
-            {
-                cellIds.AddRange(children);
-            }
-            else if (children.Count == 4)
-            {
-                cellIds.Add(parent);
-            }
-            else
-            {
-                Debug.Assert(false); // This should not happen.
+                    break;
+                case 4:
+                    {
+                        cellIds.Add(parent);
+                    }
+                    break;
+                default:
+                    {
+                        Debug.Assert(false); // This should not happen.
+                    }
+                    break;
             }
         }
 
